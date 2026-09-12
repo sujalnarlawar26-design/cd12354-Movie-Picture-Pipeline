@@ -1,4 +1,4 @@
-FROM public.ecr.aws/lambda/python:3.10-alpine3.17
+FROM public.ecr.aws/lambda/python:3.10
 ENV FLASK_RUN_HOST=0.0.0.0
 
 WORKDIR /
