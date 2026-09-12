@@ -2,26 +2,13 @@ FROM public.ecr.aws/lambda/python:3.10
 
 ENV FLASK_RUN_HOST=0.0.0.0
 
-WORKDIR /
+WORKDIR /app
 
-RUN yum install -y \
-    pcre \
-    pcre-devel \
-    gcc \
-    gcc-c++ \
-    make \
-    openssl-devel \
-    libffi-devel \
-    python3-devel \
-    && yum clean all \
-    && pip install pipenv
+COPY Pipfile* ./
 
-RUN mkdir -p /var/www/app /app
+RUN pip install --no-cache-dir pipenv && \
+    pipenv install --system --deploy
 
-COPY Pipfile* /app/
-
-RUN cd /app && pipenv install --system --deploy
-
-COPY . /app
+COPY . .
 
 CMD ["uwsgi", "--http", ":5000", "--master", "--enable-threads", "-s", "/var/www/app/app.sock", "--manage-script-name", "--mount", "/=app:app"]
