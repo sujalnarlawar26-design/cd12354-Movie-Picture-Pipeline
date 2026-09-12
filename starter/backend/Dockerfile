@@ -1,13 +1,24 @@
-FROM public.ecr.aws/lambda/python:3.10
+FROM python:3.10-slim
 
 ENV FLASK_RUN_HOST=0.0.0.0
 
 WORKDIR /app
 
-COPY Pipfile* ./
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    make \
+    libpcre3-dev \
+    libssl-dev \
+    libffi-dev \
+    python3-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --no-cache-dir pipenv && \
-    pipenv install --system --deploy
+RUN pip install --no-cache-dir pipenv
+
+COPY Pipfile Pipfile.lock ./
+
+RUN pipenv install --system --deploy
 
 COPY . .
 
